@@ -1,7 +1,10 @@
 ﻿using Auto.Data;
 using Auto.Data.Entities;
+using Auto.Website.Messages;
 using Auto.Website.Models;
+using EasyNetQ;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
@@ -14,10 +17,12 @@ namespace Auto.Website.Controllers.Api
     public class OwnersController : ControllerBase
     {
         private readonly IAutoDatabase db;
+        private readonly IBus _bus;
 
-        public OwnersController(IAutoDatabase db)
+        public OwnersController(IAutoDatabase db, IBus bus)
         {
             this.db = db;
+            _bus = bus;
         }
 
         private dynamic Paginate(string url, int index, int count, int total)
@@ -108,10 +113,21 @@ namespace Auto.Website.Controllers.Api
                 VehicleCode = dto.VehicleCode
             };
             db.CreateOwner(owner);
-
+            PublishNewOwnerMessage(owner);
             return Ok(dto);
         }
-
+        private void PublishNewOwnerMessage(Owner owner)
+        {
+            var message = new NewOwnerMessage()
+            {
+                Email = owner.Email,
+                LastName = owner.LastName,
+                FirstName = owner.FirstName,
+                VehicleCode = owner.VehicleCode,
+                ListedAtUtc = DateTime.UtcNow
+            };
+            _bus.PubSub.Publish(message);
+        }
 
 
         // PUT api/vehicles

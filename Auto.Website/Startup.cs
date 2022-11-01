@@ -15,13 +15,14 @@ using GraphQL.Server;
 using Auto.Website.GraphQL.Queries;
 using Auto.Website.GraphQL.GraphTypes;
 using GraphiQl;
+using EasyNetQ;
 
 namespace Auto.Website
 {
-    public class NewVehicleMessage
+    public class Startup
     {
 
-        public NewVehicleMessage(IConfiguration configuration)
+        public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
         }
@@ -50,6 +51,8 @@ namespace Auto.Website
             .AddSchema<AutoSchema>()
             .AddGraphTypes(typeof(OwnerGraphType).Assembly)
             );
+            var bus = RabbitHutch.CreateBus(Configuration.GetConnectionString("SOPRabbitMQ"));
+            services.AddSingleton<IBus>(bus);
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

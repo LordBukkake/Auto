@@ -4,7 +4,7 @@ using Auto.Website.Models;
 using EasyNetQ;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using SOP.Messages.Messages;
+using Auto.Website.Messages;
 using System;
 using System.Dynamic;
 using System.Linq;
@@ -16,10 +16,12 @@ namespace Auto.Website.Controllers.Api
 	[ApiController]
 	public class VehiclesController : ControllerBase
 	{
+		private readonly IBus _bus;
 		private readonly IAutoDatabase db;
 
-		public VehiclesController(IAutoDatabase db)
+		public VehiclesController(IAutoDatabase db, IBus bus)
 		{
+			this._bus = bus;
 			this.db = db;
 		}
 
@@ -112,15 +114,23 @@ namespace Auto.Website.Controllers.Api
 				VehicleModel = vehicleModel
 			};
 			db.CreateVehicle(vehicle);
+			PublishNewVehicleMessage(vehicle);
 			return Ok(dto);
 		}
-		public IActionResult Post([FromBody] OwnerDto dto)
+		private void PublishNewVehicleMessage(Vehicle vehicle)
 		{
-			var result = _repository.CreateOwner(dto);
-			PublishNewOwnerMessage(result);
-			return GetOwner(dto.Email);
+			var message = new NewVehicleMessage()
+			{
+				Registration = vehicle.Registration,
+				Manufacturer = vehicle.VehicleModel?.Manufacturer?.Name,
+				ModelName = vehicle.VehicleModel?.Name,
+				ModelCode = vehicle.VehicleModel?.Code,
+				Color = vehicle.Color,
+				Year = vehicle.Year,
+				ListedAtUtc = DateTime.UtcNow
+			};
+			_bus.PubSub.Publish(message);
 		}
-
 
 		// PUT api/vehicles
 		[HttpPut("{id}")]

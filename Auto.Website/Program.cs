@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 using System;
 
 namespace Auto.Website {
-    public class NewOwnerMessage {
+    public class Program {
         public static void Main(string[] args) {
             Console.WriteLine("Starting Auto.Website...");
             CreateHostBuilder(args).Build().Run();
@@ -21,7 +21,7 @@ namespace Auto.Website {
                         options.ListenAnyIP(5000, listenOptions => listenOptions.Protocols = HttpProtocols.Http1AndHttp2);
                         options.AllowSynchronousIO = true;
                     });
-                    webBuilder.UseStartup<NewVehicleMessage>();
+                    webBuilder.UseStartup<Startup>();
                 }
             );
         

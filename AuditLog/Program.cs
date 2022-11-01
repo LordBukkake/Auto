@@ -1,6 +1,6 @@
-﻿using EasyNetQ;
+﻿using Auto.Website.Messages;
+using EasyNetQ;
 using Microsoft.Extensions.Configuration;
-using SOP.Messages.Messages;
 
 namespace SOP.AuditLog
 {
@@ -30,7 +30,7 @@ namespace SOP.AuditLog
 
         private static void HandleNewOwnerMessage(NewOwnerMessage message)
         {
-            var csv = $"{message.Email}, {message.Surname}, {message.Name}, {message.VehicleRegistration}, {message.Birthday}, {message.ListedAtUtc}";
+            var csv = $"{message.Email}, {message.LastName}, {message.FirstName}, {message.VehicleCode}, {message.ListedAtUtc}";
             Console.WriteLine(csv);
         }
 

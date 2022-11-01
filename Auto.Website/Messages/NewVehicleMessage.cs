@@ -1,4 +1,6 @@
-namespace SOP.Messages.Messages
+using System;
+
+namespace Auto.Website.Messages
 {
     public class NewVehicleMessage
     {
@@ -8,5 +10,6 @@ namespace SOP.Messages.Messages
         public string ModelName { get; set; }
         public string Color { get; set; }
         public int Year { get; set; }
+        public DateTime ListedAtUtc { get; set; }
     }
 }

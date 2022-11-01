@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SOP.Messages\SOP.Messages.csproj" />
+    <ProjectReference Include="..\Auto.Website\Auto.Website.csproj" />
   </ItemGroup>
 
   <ItemGroup>
